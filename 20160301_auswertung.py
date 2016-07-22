@@ -6,9 +6,7 @@ import pandas as pd
 import sys
 from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.pyplot as plt
-
-
-
+from csvgen import csvgene
 
 def multipage(filename, figs=None, dpi=200):
     pp = PdfPages(filename)
@@ -22,12 +20,11 @@ def multipage(filename, figs=None, dpi=200):
 
 dateiname = sys.argv[1]
 
-print dateiname
+
+
+
+
 filename = dateiname.replace('.lvm', '.csv')
-dbname = 'Messwerte'
-messung = 'neu'
-
-
 sr = open(dateiname, "rb")
 in_txt = csv.reader(sr, delimiter='\t')
 output = open(filename, 'wb')
@@ -38,7 +35,6 @@ for row in in_txt:
 
 sr.close()
 output.close()
-
 
 datei = open(filename, 'r')
 
@@ -53,6 +49,7 @@ month = t[1][3:5]
 year = t[1][6:10]
 uhrzeit = t[5][0:8].replace('.', ':')
 datumzeit = year+'-'+month+'-'+day+' '+uhrzeit
+
 datei2 = pd.read_csv(filename, skiprows=3, index_col=False).fillna(0)
 del datei2['Zeit']
 zeiti = pd.date_range(datumzeit, periods=len(datei2), freq='S')
@@ -61,8 +58,14 @@ s = pd.DataFrame(datei2, index=zeiti)
 
 
 
-druck=s[[u'PI 01', u'PI 02', u'PI 04',u'PI 05', u'PI 07', u'PI 08', u'PI 11', u'PI 12', u'PI 14']]
-temp_arm = s[[u'TI 01', u'TI 02', u'TI 04', u'TI 05', u'TI 06', u'TI 06a', u'TI 07', u'TI 08', u'TI 09']]
+druck = s[[u'PI 01', u'PI 02', u'PI 04',
+           u'PI 05', u'PI 07', u'PI 08',
+           u'PI 11', u'PI 12', u'PI 14']]
+
+temp_arm = s[[u'TI 01', u'TI 02', u'TI 04',
+              u'TI 05', u'TI 06', u'TI 06a',
+              u'TI 07', u'TI 08', u'TI 09']]
+
 temp_reich = s[[u'TI 10', u'TI 11', u'TI 12', u'TI 13', u'TI 14', u'TI 14a']]
 temp_oil = s[[u'TI 20', u'TI 21', u'TI 21a', u'TI 22']]
 temp_outside = s[[u'TI 32', u'TI 33', u'TI 35', u'TI 36', u'TI 38', u'TI 39']]
@@ -70,7 +73,6 @@ drehzahl = s[['Drehzahl']]
 # s[['Verdichterleistung']]=s[['Verdichterleistung']]*1000
 
 massenstrom_km = s[[u'FI 07', u'FI 13']]
-
 
 konzentration = s[[u'Konzentration']]
 leistung = s[['Q-Entgaser', 'Q-Resorber', 'Verdichterleistung']]
